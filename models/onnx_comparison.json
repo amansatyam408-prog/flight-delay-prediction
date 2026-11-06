@@ -1,0 +1,9 @@
+{
+  "rows_compared": 200000,
+  "classifier_max_abs_prob_diff": 4.172325134277344e-07,
+  "classifier_roc_auc_onnx": 0.755117,
+  "classifier_roc_auc_xgboost": 0.755117,
+  "regressor_max_abs_min_diff": 0.000274658203125,
+  "regressor_mae_onnx_min": 18.9112,
+  "regressor_mae_xgboost_min": 18.9112
+}
