@@ -1,6 +1,6 @@
 """
-src/predict_onnx.py — STEP 11b: run ONNX models via onnxruntime; verify they match XGBoost.
-Run:  python src/predict_onnx.py    Output: models/onnx_comparison.json
+src/predict_onnx.py — STEP 11b: onnxruntime inference + equivalence check vs XGBoost.
+Run:  python src/predict_onnx.py     Output: models/onnx_comparison.json
 """
 import json
 import numpy as np
@@ -14,15 +14,15 @@ N = 200_000  # compare on first 200k test rows
 def main():
     test = pd.read_parquet("data/processed/test.parquet")
     feats = json.load(open("models/feature_list.json"))
-    X  = test[feats].head(N).astype(np.float32)   # ONNX wants float32
-    X64 = test[feats].head(N).astype(np.float64)  # native xgboost
+    X   = test[feats].head(N).astype(np.float32)    # ONNX input is float32
+    X64 = test[feats].head(N).astype(np.float64)    # native xgboost
     yc = test["DELAYED_15"].head(N).to_numpy()
     yr = test["ARRIVAL_DELAY"].head(N).to_numpy()
 
     sess_c = rt.InferenceSession("models/xgb_classifier.onnx", providers=["CPUExecutionProvider"])
-    sess_r = rt.InferenceSession("models/xgb_regressor.onnx", providers=["CPUExecutionProvider"])
+    sess_r = rt.InferenceSession("models/xgb_regressor.onnx",  providers=["CPUExecutionProvider"])
     out_c = sess_c.run(None, {"float_input": X.to_numpy()})
-    probs = out_c[1]
+    probs = out_c[1]                                 # classifier outputs [label, probabilities Nx2]
     p_onnx = probs[:, 1] if isinstance(probs, np.ndarray) else np.array([d[1] for d in probs])
     r_onnx = sess_r.run(None, {"float_input": X.to_numpy()})[0].ravel()
 
@@ -47,8 +47,9 @@ def main():
 
     from src.predict import build_features
     row = build_features("WN", "DAL", "PHX", "2015-12-20", 1915, 2030, 135).astype(np.float32)
-    p1 = sess_c.run(None, {"float_input": row.to_numpy()})[1]
-    p1 = float(p1[0][1] if isinstance(p1, list) else p1[0, 1])
+    out1 = sess_c.run(None, {"float_input": row.to_numpy()})
+    probs1 = out1[1]
+    p1 = float(probs1[0, 1] if isinstance(probs1, np.ndarray) else probs1[0][1])
     m1 = float(sess_r.run(None, {"float_input": row.to_numpy()})[0].ravel()[0])
     print(f"ONNX single flight WN DAL->PHX 2015-12-20: P={p1:.4f}  delay={m1:.1f} min")
 

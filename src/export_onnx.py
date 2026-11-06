@@ -1,22 +1,24 @@
 """
-src/export_onnx.py — STEP 11a: convert trained XGBoost models to ONNX.
+src/export_onnx.py — STEP 11a: convert trained XGBoost models to ONNX via onnxmltools
+(skl2onnx >=1.17 removed its XGBoost converter, so we convert the Booster directly).
 Run:  python src/export_onnx.py     Outputs: models/xgb_classifier.onnx, models/xgb_regressor.onnx
 """
 import json
 import xgboost as xgb
-from skl2onnx import convert_sklearn
-from skl2onnx.common.data_types import FloatTensorType
+import onnxmltools
+from onnxmltools.convert.common.data_types import FloatTensorType as OXFloatTensor
 
 def main():
     feats = json.load(open("models/feature_list.json"))
     n = len(feats)
-    print(f"Exporting with {n} input features...")
-    initial_types = [("float_input", FloatTensorType([None, n]))]
+    print(f"Exporting ONNX with {n} input features...")
+    initial_types = [("float_input", OXFloatTensor([None, n]))]   # onnxmltools' OWN tensor type!
     jobs = [("classifier", xgb.XGBClassifier(), "models/xgb_classifier.json"),
-            ("regressor", xgb.XGBRegressor(), "models/xgb_regressor.json")]
+            ("regressor",  xgb.XGBRegressor(),  "models/xgb_regressor.json")]
     for name, model, path in jobs:
         model.load_model(path)
-        onnx_model = convert_sklearn(model, initial_types=initial_types)
+        booster = model.get_booster()                     # converter needs the Booster
+        onnx_model = onnxmltools.convert_xgboost(booster, initial_types=initial_types, target_opset=15)
         out = f"models/xgb_{name}.onnx"
         with open(out, "wb") as f:
             f.write(onnx_model.SerializeToString())
