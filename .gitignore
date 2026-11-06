@@ -12,3 +12,5 @@ models/*.onnx
 .env
 kaggle.json
 .DS_Store
+models/lgbm_classifier.txt
+models/lgbm_regressor.txt

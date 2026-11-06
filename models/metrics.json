@@ -1,0 +1,22 @@
+{
+  "xgb_classifier": {
+    "roc_auc": 0.7542,
+    "precision@0.5": 0.3336,
+    "recall@0.5": 0.6626,
+    "f1@0.5": 0.4437
+  },
+  "lgbm_classifier": {
+    "roc_auc": 0.7317,
+    "precision@0.5": 0.3102,
+    "recall@0.5": 0.6565,
+    "f1@0.5": 0.4213
+  },
+  "xgb_regressor": {
+    "mae_min": 18.863,
+    "rmse_min": 35.865
+  },
+  "lgbm_regressor": {
+    "mae_min": 19.421,
+    "rmse_min": 36.601
+  }
+}
