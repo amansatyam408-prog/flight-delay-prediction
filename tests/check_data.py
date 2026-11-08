@@ -1,6 +1,6 @@
 import pandas as pd
 
-flights  = pd.read_csv("data/raw/flights.csv")
+flights = pd.read_csv("data/raw/flights.csv", dtype={"ORIGIN_AIRPORT": str, "DESTINATION_AIRPORT": str})
 airlines = pd.read_csv("data/raw/airlines.csv")
 airports = pd.read_csv("data/raw/airports.csv")
 

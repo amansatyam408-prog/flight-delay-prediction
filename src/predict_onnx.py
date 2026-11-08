@@ -2,6 +2,8 @@
 src/predict_onnx.py — STEP 11b: onnxruntime inference + equivalence check vs XGBoost.
 Run:  python src/predict_onnx.py     Output: models/onnx_comparison.json
 """
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 import numpy as np
 import pandas as pd
