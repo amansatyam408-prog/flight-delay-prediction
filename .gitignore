@@ -14,3 +14,8 @@ kaggle.json
 .DS_Store
 models/lgbm_classifier.txt
 models/lgbm_regressor.txt
+!models/feature_list.json
+!models/encoders.pkl
+!models/xgb_classifier.json
+!models/xgb_regressor.json
+!models/lookups.pkl
