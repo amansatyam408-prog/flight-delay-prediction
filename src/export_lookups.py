@@ -31,6 +31,9 @@ lookups["WX_BY_KEY"] = weather.set_index(["ORIGIN_AIRPORT", "DATE"])
 airports = pd.read_parquet("data/processed/airports.parquet")
 lookups["AIRPORT_LL"] = airports.set_index("IATA_CODE")[["LATITUDE", "LONGITUDE"]]
 
+lookups["AIRLINES"] = pd.read_parquet("data/processed/airlines.parquet").to_dict("records")
+lookups["AIRPORTS"] = airports.to_dict("records")
+
 joblib.dump(lookups, "models/lookups.pkl")
 print("Saved models/lookups.pkl   size = %.2f MB" % (os.path.getsize("models/lookups.pkl") / 1e6))
 print("  TRAFFIC_DAY:", len(lookups["TRAFFIC_DAY"]), "airports |",
